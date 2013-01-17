@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+  <head>
+      <meta charset="utf-8">
+      <title>LED on Raspberry Pi</title>
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <meta name="description" content="">
+      <meta name="author" content="">
+
+      <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.0/jquery.min.js"></script>
+      <script src="/javascripts/jquery.knob.js"></script>
+      <script src="/javascripts/control.js"></script>
+
+    <link rel='stylesheet' href='/stylesheets/style.css' />
+    <!-- Le styles -->
+    <link href="/stylesheets/bootstrap.css" rel="stylesheet">
+        <style>
+          body {
+            padding-top: 60px; /* 60px to make the container go all the way to the bottom of the topbar */
+          }
+        </style>
+    <link href="/stylesheets/bootstrap-responsive.css" rel="stylesheet">
+  </head>
+
+  <body>
+    <div align="center" class="container">
+        <div>
+            <h1>
+                Full Color LED Control
+            </h1>
+        </div>
+
+        <div id="jquery-knob">
+            <input id="knob" data-width="200" data-min="0" data-max="3069" >
+        </div>
+
+        <div>
+            <a id="reset_btn" class="btn">
+                RESET
+            </a>
+        </div>
+    </div>
+  </body>
+</html>
