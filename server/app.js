@@ -5,11 +5,14 @@
 
 var express = require('express')
   , routes = require('./routes')
-  , user = require('./routes/user')
   , http = require('http')
   , path = require('path');
 
-var app = express();
+var app = express()
+    , http = require('http')
+    , server = http.createServer(app)
+    , io = require('socket.io').listen(server);
+
 
 app.configure(function(){
   app.set('port', process.env.PORT || 3000);
@@ -28,8 +31,24 @@ app.configure('development', function(){
 });
 
 app.get('/', routes.index);
-app.get('/users', user.list);
 
-http.createServer(app).listen(app.get('port'), function(){
-  console.log("Express server listening on port " + app.get('port'));
+// ソケットを作る
+var socketIO = require('socket.io');
+// クライアントの接続を待つ
+server.listen(app.get('port'));
+
+// クライアントが接続してきたときの処理
+io.sockets.on('connection', function(socket) {
+    console.log("connection");
+    // メッセージを受けた時の処理
+    socket.on('message', function(data) {
+        // 接続していクライアントに全てに送信
+        console.log("value: " + data.value);
+        socket.broadcast.emit('message', { value: data.value });
+    });
+
+    // クライアントが切断した時に処理
+    socket.on('disconnection', function() {
+        console.log("disconnection");
+    });
 });
