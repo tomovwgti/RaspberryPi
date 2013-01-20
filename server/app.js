@@ -61,7 +61,7 @@ io.sockets.on('connection', function(socket) {
         // B
         //console.log("B: " + data.value % 1024);
         exec('gpio -g pwm 18 ' + data.value % 1024);
-        // G
+        // R
         if ((1024 <= data.value && data.value < 2047) || (3072 <= data.value && data.value < 4095) ) {
             //console.log("G: " + 1);
             exec('gpio -g write 23 1');
@@ -69,7 +69,7 @@ io.sockets.on('connection', function(socket) {
             //console.log("G: " + 0);
             exec('gpio -g write 23 0');
         }
-        // R
+        // G
         if ((2048 <= data.value && data.value < 3071) || (3072 <= data.value && data.value < 4095) ) {
             //console.log("R: " + 1);
             exec('gpio -g write 24 1');
