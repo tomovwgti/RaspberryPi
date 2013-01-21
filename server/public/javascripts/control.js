@@ -9,7 +9,7 @@
 $(function() {
     $('#knob').knob({
         'change' : function(value) {
-            console.log(value);
+            //console.log(value);
             SendMsg(value);
         }
     });
@@ -28,7 +28,7 @@ $(function() {
 
     // メッセージを受信
     socket.on('message', function(msg) {
-        console.log("value: " + msg.value);
+        //console.log("value: " + msg.value);
         // ノブの値を更新
         $('#knob').val(msg.value).trigger('change');
     });

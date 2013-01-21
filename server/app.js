@@ -42,8 +42,8 @@ app.get('/', routes.index);
 var exec = require('child_process').exec;
 
 exec('gpio -g mode 18 pwm');
-exec('gpio -g mode 23 write');
-exec('gpio -g mode 24 write');
+exec('gpio -g mode 23 out');
+exec('gpio -g mode 24 out');
 
 // ソケットを作る
 var socketIO = require('socket.io');
