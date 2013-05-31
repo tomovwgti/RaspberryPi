@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title><%= title %></title>
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no">
+    <meta charset="utf-8">
+    <link href="stylesheets/maps.css" rel="stylesheet">
+    <!--
+    Include the maps javascript with sensor=true because this code is using a
+    sensor (a GPS locator) to determine the user's location.
+    See: https://developers.google.com/apis/maps/documentation/javascript/basics#SpecifyingSensor
+    -->
+    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+    <script src="https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=true"></script>
+    <script src="/socket.io/socket.io.js"></script>
+    <script type="text/javascript" src="javascripts/maps.js"></script>
+  </head>
+  <body>
+    <div id="map-canvas"></div>
+  </body>
+</html>
