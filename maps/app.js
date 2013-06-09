@@ -25,6 +25,9 @@ var sp = new serialport.SerialPort(portName, {
     parser: serialport.parsers.readline("\n")
 });
 
+// NMEA
+var nmea = require('nmea');
+
 // all environments
 app.set('port', process.env.PORT || 3000);
 app.set('views', __dirname + '/views');
@@ -65,16 +68,19 @@ io.sockets.on('connection', function(socket) {
 // data from Serial port
 sp.on('data', function(input) {
 
-    var buffer = new Buffer(input, 'utf8');
-    var receive = buffer.toString();
-//    console.log(receive);
-    if (receive.indexOf('$GPGGA') === -1) {
-        return;
+    var nmeaData = nmea.parse(input);
+    if (nmeaData.type === 'fix') {
+//        nmeaData.lat = 3540.8581;
+//        nmeaData.lon = 13945.9603;
+        var latlon = new Object();
+        latlon.nmeaLat = nmeaData.lat;
+        latlon.nmeaLon = nmeaData.lon;
+        codeLatLng(latlon);
+        console.log('LAT: ' + latlon.lat);
+        console.log('LON: ' + latlon.lon);
+        // つながっているクライアント全員に送信
+        io.sockets.json.emit('message', { value: latlon });
     }
-    // NMEAの解析
-    CaliculateNmea(receive);
-       // つながっているクライアント全員に送信
-//    io.sockets.json.emit('message', { value: jsonData });
 });
 
 sp.on('close', function(err) {
@@ -85,19 +91,17 @@ sp.on('open', function(err) {
     console.log('port opened');
 });
 
-// NMEAの解析
-function CaliculateNmea(receive) {
-    console.log(receive);
-    var data = receive.split(',');
-    var time = data[1];
-    var n = 3540.8581;//data[2];
-    var e = 13945.9603;//data[4];
-    var valid = data[6];
-    console.log('Time: ' + time);
-    console.log('N: ' + n);
-    console.log('E: ' + e);
-    console.log('Valid: ' + valid);
-    var deg = n.substring(0,2);
-    var min = n.substring(2,4);
-    var sec = n.substring()
+function se2dec(point){
+    var point1 = Math.floor( point/100 );
+    var point2 = point - point1*100;
+    return point1 + point2/60;
+}
+
+function codeLatLng(value) {
+    console.log('NMEA-LAT: ' + value.nmeaLat);
+    console.log('NMEA-LON: ' + value.nmeaLon);
+
+    value.lat = se2dec(value.nmeaLat);
+    value.lon = se2dec(value.nmeaLon);
+    return value;
 }
