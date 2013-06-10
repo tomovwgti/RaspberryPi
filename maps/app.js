@@ -69,17 +69,22 @@ io.sockets.on('connection', function(socket) {
 sp.on('data', function(input) {
 
     var nmeaData = nmea.parse(input);
-    if (nmeaData.type === 'fix') {
+//    console.log(nmeaData);
+    try {
+        if (nmeaData.type === 'fix') {
 //        nmeaData.lat = 3540.8581;
 //        nmeaData.lon = 13945.9603;
-        var latlon = new Object();
-        latlon.nmeaLat = nmeaData.lat;
-        latlon.nmeaLon = nmeaData.lon;
-        codeLatLng(latlon);
-        console.log('LAT: ' + latlon.lat);
-        console.log('LON: ' + latlon.lon);
-        // つながっているクライアント全員に送信
-        io.sockets.json.emit('message', { value: latlon });
+            var latlon = new Object();
+            latlon.nmeaLat = nmeaData.lat;
+            latlon.nmeaLon = nmeaData.lon;
+            codeLatLng(latlon);
+            console.log('LAT: ' + latlon.lat);
+            console.log('LON: ' + latlon.lon);
+            // つながっているクライアント全員に送信
+            io.sockets.json.emit('message', { value: latlon });
+        }
+    } catch (err) {
+        console.log('uncaughtException => ' + err);
     }
 });
 
@@ -98,8 +103,8 @@ function se2dec(point){
 }
 
 function codeLatLng(value) {
-    console.log('NMEA-LAT: ' + value.nmeaLat);
-    console.log('NMEA-LON: ' + value.nmeaLon);
+//    console.log('NMEA-LAT: ' + value.nmeaLat);
+//    console.log('NMEA-LON: ' + value.nmeaLon);
 
     value.lat = se2dec(value.nmeaLat);
     value.lon = se2dec(value.nmeaLon);
