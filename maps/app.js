@@ -110,3 +110,8 @@ function codeLatLng(value) {
     value.lon = se2dec(value.nmeaLon);
     return value;
 }
+
+// 追加。catchされなかった例外の処理設定。
+process.on('uncaughtException', function (err) {
+    console.log('uncaughtException => ' + err);
+});
