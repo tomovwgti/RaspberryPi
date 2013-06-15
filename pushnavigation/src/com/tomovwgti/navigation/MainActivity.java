@@ -4,6 +4,7 @@ package com.tomovwgti.navigation;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
@@ -14,6 +15,7 @@ import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.WindowManager;
 import android.view.WindowManager.LayoutParams;
 import android.widget.EditText;
 import android.widget.Toast;
@@ -28,7 +30,9 @@ import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.PolylineOptions;
 import com.tomovwgti.json.Msg;
 import com.tomovwgti.navigation.SocketIFragment.MessageCallback;
 import com.tomovwgti.navigation.SocketIFragment.MessageCallbackPicker;
@@ -42,13 +46,15 @@ public class MainActivity extends FragmentActivity implements MessageCallbackPic
     private SharedPreferences mPref;
     private SharedPreferences.Editor mEditor;
     private GoogleMap mMap;
+    private Marker mMarker;
     private MarkerOptions mOptions;
     private BitmapDescriptor mIcon;
-    private static float t = 0.0f;
+    private LatLng mPrevLocation;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         // 起動時にキーボードが開かないように
         this.getWindow().setSoftInputMode(LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
         setContentView(R.layout.map_view);
@@ -72,13 +78,27 @@ public class MainActivity extends FragmentActivity implements MessageCallbackPic
             Log.d(TAG, "You must update Google Maps.");
             finish();
         }
+        mPrevLocation = new LatLng(35.692298, 139.699252);
         mOptions = new MarkerOptions();
         mIcon = BitmapDescriptorFactory.fromResource(R.drawable.cabs);
         mOptions.icon(mIcon);
-        LatLng initLocation = new LatLng(35.692298, 139.699252);
-        CameraPosition init = new CameraPosition.Builder().target(initLocation).zoom(16).build();
+        mOptions.position(mPrevLocation);
+        mMarker = mMap.addMarker(mOptions);
+        CameraPosition init = new CameraPosition.Builder().target(mPrevLocation).zoom(16).build();
         CameraUpdate camera = CameraUpdateFactory.newCameraPosition(init);
         mMap.animateCamera(camera);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
     }
 
     @Override
@@ -188,13 +208,18 @@ public class MainActivity extends FragmentActivity implements MessageCallbackPic
     public void onJsonMessage(Msg message) {
         Log.i(TAG, String.valueOf(message.getValue().getLat()));
         Log.i(TAG, String.valueOf(message.getValue().getLon()));
-        // ポイント位置
-        LatLng latLng = new LatLng(message.getValue().getLat() + t, message.getValue().getLon() + t);
+        mMarker.setVisible(false);
+        // 現在位置
+        LatLng latLng = new LatLng(message.getValue().getLat(), message.getValue().getLon());
         mOptions.position(latLng);
+        mMarker = mMap.addMarker(mOptions);
         CameraUpdate cu = CameraUpdateFactory.newLatLng(latLng);
         mMap.animateCamera(cu);
-        mMap.addMarker(mOptions);
-        t += 0.01;
+        mMarker.setVisible(true);
+        // 線を引く
+        mMap.addPolyline(new PolylineOptions().add(mPrevLocation, latLng).width(5)
+                .color(Color.BLUE));
+        mPrevLocation = latLng;
     }
 
     @Override
