@@ -15,15 +15,20 @@ import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.WindowManager.LayoutParams;
-import android.widget.ArrayAdapter;
 import android.widget.EditText;
-import android.widget.ListView;
 import android.widget.Toast;
 
 import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
+import com.google.android.gms.maps.CameraUpdate;
+import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapsInitializer;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptor;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.CameraPosition;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
 import com.tomovwgti.json.Msg;
 import com.tomovwgti.navigation.SocketIFragment.MessageCallback;
 import com.tomovwgti.navigation.SocketIFragment.MessageCallbackPicker;
@@ -36,8 +41,10 @@ public class MainActivity extends FragmentActivity implements MessageCallbackPic
     private AlertDialog mAlertDialog;
     private SharedPreferences mPref;
     private SharedPreferences.Editor mEditor;
-    private ArrayAdapter<String> mAdapter;
-    private ListView mListView;
+    private GoogleMap mMap;
+    private MarkerOptions mOptions;
+    private BitmapDescriptor mIcon;
+    private static float t = 0.0f;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -45,11 +52,6 @@ public class MainActivity extends FragmentActivity implements MessageCallbackPic
         // 起動時にキーボードが開かないように
         this.getWindow().setSoftInputMode(LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
         setContentView(R.layout.map_view);
-
-        mAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1,
-                android.R.id.text1);
-        mListView = (ListView) findViewById(R.id.list);
-        mListView.setAdapter(mAdapter);
 
         { // SocketIOFragmentの作成と登録
             FragmentManager manager = getSupportFragmentManager();
@@ -62,15 +64,21 @@ public class MainActivity extends FragmentActivity implements MessageCallbackPic
         mEditor = mPref.edit();
 
         // Map表示
-        GoogleMap map = ((SupportMapFragment) getSupportFragmentManager()
-                .findFragmentById(R.id.map)).getMap();
+        mMap = ((SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map))
+                .getMap();
         try {
             MapsInitializer.initialize(this);
         } catch (GooglePlayServicesNotAvailableException e) {
             Log.d(TAG, "You must update Google Maps.");
             finish();
         }
-
+        mOptions = new MarkerOptions();
+        mIcon = BitmapDescriptorFactory.fromResource(R.drawable.cabs);
+        mOptions.icon(mIcon);
+        LatLng initLocation = new LatLng(35.692298, 139.699252);
+        CameraPosition init = new CameraPosition.Builder().target(initLocation).zoom(16).build();
+        CameraUpdate camera = CameraUpdateFactory.newCameraPosition(init);
+        mMap.animateCamera(camera);
     }
 
     @Override
@@ -178,7 +186,15 @@ public class MainActivity extends FragmentActivity implements MessageCallbackPic
 
     @Override
     public void onJsonMessage(Msg message) {
-        mAdapter.add(message.getValue());
+        Log.i(TAG, String.valueOf(message.getValue().getLat()));
+        Log.i(TAG, String.valueOf(message.getValue().getLon()));
+        // ポイント位置
+        LatLng latLng = new LatLng(message.getValue().getLat() + t, message.getValue().getLon() + t);
+        mOptions.position(latLng);
+        CameraUpdate cu = CameraUpdateFactory.newLatLng(latLng);
+        mMap.animateCamera(cu);
+        mMap.addMarker(mOptions);
+        t += 0.01;
     }
 
     @Override
