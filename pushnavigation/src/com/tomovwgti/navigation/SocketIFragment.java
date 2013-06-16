@@ -78,7 +78,7 @@ public class SocketIFragment extends Fragment {
                     mCallback.onMessage();
                     break;
                 case SocketIOManager.SOCKETIO_JSON_MESSAGE:
-                    Log.i(TAG, "SOCKETIO_JSON_MESSAGE");
+                    // /Log.i(TAG, "SOCKETIO_JSON_MESSAGE");
                     Msg message = JSON.decode((String) (msg.obj), Msg.class);
                     mCallback.onJsonMessage(message);
                     break;

@@ -206,8 +206,8 @@ public class MainActivity extends FragmentActivity implements MessageCallbackPic
 
     @Override
     public void onJsonMessage(Msg message) {
-        Log.i(TAG, String.valueOf(message.getValue().getLat()));
-        Log.i(TAG, String.valueOf(message.getValue().getLon()));
+        // Log.i(TAG, String.valueOf(message.getValue().getLat()));
+        // Log.i(TAG, String.valueOf(message.getValue().getLon()));
         mMarker.setVisible(false);
         // 現在位置
         LatLng latLng = new LatLng(message.getValue().getLat(), message.getValue().getLon());

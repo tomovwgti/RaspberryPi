@@ -15,7 +15,8 @@ var app = express()
     , io = require('socket.io').listen(server);
 
 // Serial Port
-var portName = '/dev/tty.PL2303-004413FD';
+var portName = '/dev/tty.PL2303-004313FD';
+//var portName = '/dev/ttyUSB0';
 var sp = new serialport.SerialPort(portName, {
     baudRate: 38400,
     dataBits: 8,

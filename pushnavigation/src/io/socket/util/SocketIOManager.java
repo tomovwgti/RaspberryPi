@@ -78,7 +78,7 @@ public class SocketIOManager implements IOCallback {
 
     @Override
     public void onMessage(JSONObject json, IOAcknowledge ack) {
-        Log.i(TAG, "Server said:" + json.toString());
+        // /Log.i(TAG, "Server said:" + json.toString());
         if (isHandler()) {
             Message msg = sHandler.obtainMessage(SOCKETIO_JSON_MESSAGE, json.toString());
             sHandler.sendMessage(msg);
@@ -87,7 +87,7 @@ public class SocketIOManager implements IOCallback {
 
     @Override
     public void on(String event, IOAcknowledge ack, Object... args) {
-        Log.i(TAG, "Server triggered event '" + event + "'");
+        // /Log.i(TAG, "Server triggered event '" + event + "'");
         if (event.equals("message")) {
             onMessage((JSONObject) args[0], null);
         }

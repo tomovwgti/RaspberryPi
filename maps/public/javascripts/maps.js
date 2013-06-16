@@ -81,47 +81,15 @@ $(function (global) {
         map = new google.maps.Map($('#map-canvas').get(0),
             mapOptions);
 
-        // Try HTML5 geolocation
-        if(navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition(function(position) {
-                var pos = new google.maps.LatLng(position.coords.latitude,
-                    position.coords.longitude);
-
-                var infowindow = new google.maps.InfoWindow({
-                    map: map,
-                    position: pos
-                });
-
-                map.setCenter(pos);
-                prevLocation = pos;
-                prevMarker.setPosition(prevLocation);
-            }, function() {
-                handleNoGeolocation(true);
-            });
-        } else {
-            // Browser doesn't support Geolocation
-            handleNoGeolocation(false);
-        }
-    }
-
-    /**
-     * GeoLocation
-     * @param errorFlag
-     */
-    function handleNoGeolocation(errorFlag) {
-        if (errorFlag) {
-            var content = 'Error: The Geolocation service failed.';
-        } else {
-            var content = 'Error: Your browser doesn\'t support geolocation.';
-        }
-
-        var options = {
+        // 初期値は新宿 35.689771,139.696891
+        var pos = new google.maps.LatLng(35.689771,139.696891);
+        var infowindow = new google.maps.InfoWindow({
             map: map,
-            position: new google.maps.LatLng(60, 105),
-            content: content
-        };
+            position: pos
+        });
 
-        var infowindow = new google.maps.InfoWindow(options);
-        map.setCenter(options.position);
+        map.setCenter(pos);
+        prevLocation = pos;
+        prevMarker.setPosition(prevLocation);
     }
 }(this));
